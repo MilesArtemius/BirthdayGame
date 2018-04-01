@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "356340136432",
+    "firebase_url": "https://birthdaygame-310c7.firebaseio.com",
+    "project_id": "birthdaygame-310c7",
+    "storage_bucket": "birthdaygame-310c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356340136432:android:369e96de5ca27886",
+        "android_client_info": {
+          "package_name": "entertainment.ekdorn.birthdaygame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356340136432-8jo4dpba6eutkc9lfbde77393a0u4lpp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "entertainment.ekdorn.birthdaygame",
+            "certificate_hash": "7062326b8d9c685c3f504b9dfa4a8ffd442b5c0e"
+          }
+        },
+        {
+          "client_id": "356340136432-ca3ttfqde8nvp39taum80u7fqsap2d9j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmI0CoyDJE3JlJj4cOnL5SR_6U2VLqMEU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356340136432-ca3ttfqde8nvp39taum80u7fqsap2d9j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
