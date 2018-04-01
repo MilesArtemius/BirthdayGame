@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 /**
  * Created by User on 01.04.2018.
@@ -15,21 +14,26 @@ import android.widget.Toast;
 
 public class GraphicsView extends View {
 
-    Bitmap [] present = new Bitmap[7];
-    Bitmap top;
+    private Bitmap [] present = new Bitmap[7];
+    private Bitmap top;
 
-    int globalCount;
-    int pointMeasure;
-    int hitCount;
+    private int globalCount;
+    private int pointMeasure;
+    private int hitCount;
 
-    float rad, finrad;
-    Paint paint;
-    Paint textPaint;
-    float degrees; // top rotation degree
+    private float rad, finrad;
+    private Paint paint;
+    private Paint textPaint;
+    private float degrees; // top rotation degree
 
-    Matrix matrix;
+    private Matrix matrix;
+    private Listener listener;
 
     //SETTERS:
+
+    public void setListener (Listener listener) {
+        this.listener = listener;
+    }
 
     public void setPresent(Bitmap[] present) {
         this.present = present;
@@ -105,7 +109,7 @@ public class GraphicsView extends View {
                 System.out.println("down");
                 hitCount -= ((hitCount > 0) ? (1) : (0));
                 if (hitCount == 0) {
-                    Toast.makeText(getContext(), "cograts", Toast.LENGTH_SHORT).show();
+                    listener.onPresentGot();
                 }
             }
             return true;
@@ -114,9 +118,14 @@ public class GraphicsView extends View {
         }
     }
 
-
     public int findPresent() {
         int currDen = (int) Math.ceil((double) globalCount / 6);
         return (int) (5 - Math.floor((double) hitCount / currDen));
+    }
+
+
+
+    public interface Listener {
+        void onPresentGot();
     }
 }

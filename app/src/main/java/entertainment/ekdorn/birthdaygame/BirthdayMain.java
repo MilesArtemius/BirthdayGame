@@ -11,6 +11,7 @@ import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class BirthdayMain extends AppCompatActivity {
 
@@ -50,6 +51,14 @@ public class BirthdayMain extends AppCompatActivity {
 
         main.setGlobalCount(10);
 
+        main.setListener(new GraphicsView.Listener() {
+            @Override
+            public void onPresentGot() {
+                configureDialog();
+                Toast.makeText(BirthdayMain.this, "cograts", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         setContentView(main);
     }
 
@@ -59,12 +68,24 @@ public class BirthdayMain extends AppCompatActivity {
         super.onPause();
     }
 
-    @Override
-    public void onDestroy() {
-        for (Bitmap bmp: present) {
-            bmp.recycle();
-        }
-        super.onDestroy();
+
+
+
+    private void configureDialog() {
+        RetainDialog mainDialog = new RetainDialog(this);
+        mainDialog.getNewGameButton().setOnClickListener(v -> {
+            mainDialog.hide();
+        });
+
+
+        mainDialog.getQuickModeCheckBox().setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                mainDialog.getQuickModeCheckBox().setText("Quick mode enabled");
+            } else {
+                mainDialog.getQuickModeCheckBox().setText("Quick mode disabled");
+            }
+        });
+        mainDialog.show();
     }
 
     public static Bitmap fillWithPresents(Context context,  int drawableId) {
