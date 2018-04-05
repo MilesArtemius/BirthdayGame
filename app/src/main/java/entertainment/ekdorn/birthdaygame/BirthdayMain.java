@@ -1,149 +1,73 @@
 package entertainment.ekdorn.birthdaygame;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
+
+import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 
 public class BirthdayMain extends AppCompatActivity {
 
-    Bitmap [] present = new Bitmap[7];
-    Bitmap top;
-
-    static int hitCount;
-
-    SharedPreferences prefs;
+    public static String appSign = "BIRTHDAY_GAME";
+    private GraphicsView main;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        GraphicsView main = new GraphicsView(this);
+        Present last = PrefsDecoder.loadGame(this);
+        boolean newGame = (last.name.equals(PresentNames.NONE));
 
-        try {
-            for (int i = 0; i < 6; i++) {
-                present[i] = fillWithPresents(this, i);
-            }
-            top = getBitmapFromDrawable(this, R.drawable.top);
-        } catch (NullPointerException npe) {
-            npe.fillInStackTrace();
-        }
-        main.setPresent(present);
-        main.setTop(top);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.contains("hit_count")) {
-            hitCount = prefs.getInt("hit_count", 0);
-        } else {
-            prefs.edit().putInt("hit_count", 10).apply();
-            hitCount = 10;
-        }
-        hitCount = 10; //TODO: delete;
-        main.setHitCount(hitCount);
-
-        main.setGlobalCount(10);
-
-        main.setListener(new GraphicsView.Listener() {
-            @Override
-            public void onPresentGot() {
-                configureDialog();
-                Toast.makeText(BirthdayMain.this, "cograts", Toast.LENGTH_SHORT).show();
-            }
+        main = new GraphicsView(this);
+        main.setPresent(newGame ? new Present(PresentNames.NONE, this) : last);
+        main.setListener(() -> {
+            applyDialog("You won!", "", "get the present",appSign, "first one", PresentNames.SPECIAL);
         });
-
         setContentView(main);
+
+        if (newGame) {
+            applyDialog("Hi Masha!", "This is a game to get your birthday presents",
+                    "start!",appSign, "she started", PresentNames.BOOK);
+        }
     }
 
     @Override
     protected void onPause() {
-        prefs.edit().putInt("hit_count", hitCount).apply();
+        PrefsDecoder.saveGame(this, main.getCurrent());
         super.onPause();
     }
 
 
 
 
-    private void configureDialog() {
-        RetainDialog mainDialog = new RetainDialog(this);
-        mainDialog.getNewGameButton().setOnClickListener(v -> {
-            mainDialog.hide();
-        });
 
-
-        mainDialog.getQuickModeCheckBox().setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                mainDialog.getQuickModeCheckBox().setText("Quick mode enabled");
-            } else {
-                mainDialog.getQuickModeCheckBox().setText("Quick mode disabled");
+    public void applyDialog(String dialogTitle, String dialogMesage, String onButton, String emailTitle, String emailBody, String nextPresent) {
+        RetainDialog ret = new RetainDialog(BirthdayMain.this);
+        ret.setTitle(dialogTitle);
+        ret.setMessage(dialogMesage);
+        ret.setCanceledOnTouchOutside(false);
+        ret.setButton(DialogInterface.BUTTON_POSITIVE, onButton, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                BackgroundMail.newBuilder(BirthdayMain.this)
+                        .withUsername("total.noreply.notifier@gmail.com")
+                        .withPassword("multipassword")
+                        .withMailto("shveitsar215@gmail.com")
+                        .withType(BackgroundMail.TYPE_PLAIN)
+                        .withSubject(emailTitle)
+                        .withBody(emailBody)
+                        .withProcessVisibility(false)
+                        .withSendingMessageSuccess(null)
+                        .withSendingMessageSuccess(null)
+                        .send();
             }
         });
-        mainDialog.show();
-    }
-
-    public static Bitmap fillWithPresents(Context context,  int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.present0);;
-
-        switch (drawableId) {
-            case 0:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present0);
-                break;
-            case 1:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present1);
-                break;
-            case 2:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present2);
-                break;
-            case 3:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present3);
-                break;
-            case 4:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present4);
-                break;
-            case 5:
-                drawable = ContextCompat.getDrawable(context, R.drawable.present5);
-                break;
-        }
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        } else {
-            try {
-                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                drawable.draw(canvas);
-
-                return bitmap;
-            } catch (Exception e) {
-                return null;
+        ret.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                main.setPresent(new Present(nextPresent, BirthdayMain.this));
             }
-        }
-    }
-
-    public static Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        } else {
-            try {
-                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                drawable.draw(canvas);
-
-                return bitmap;
-            } catch (Exception e) {
-                return null;
-            }
-        }
+        });
+        ret.show();
     }
 }

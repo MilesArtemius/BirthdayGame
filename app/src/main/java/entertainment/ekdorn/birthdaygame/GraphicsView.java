@@ -14,12 +14,15 @@ import android.view.View;
 
 public class GraphicsView extends View {
 
-    private Bitmap [] present = new Bitmap[7];
-    private Bitmap top;
+    //private Bitmap [] present = new Bitmap[7];
+    //private Bitmap top;
 
-    private int globalCount;
+    //private int globalCount;
+    //private int hitCount;
+
+    private Present current;
+
     private int pointMeasure;
-    private int hitCount;
 
     private float rad, finrad;
     private Paint paint;
@@ -35,20 +38,14 @@ public class GraphicsView extends View {
         this.listener = listener;
     }
 
-    public void setPresent(Bitmap[] present) {
-        this.present = present;
+    public void setPresent(Present actual) {
+        current = actual;
     }
 
-    public void setTop(Bitmap top) {
-        this.top = top;
-    }
+    //GETTERS:
 
-    public void setHitCount(int hitCount) {
-        this.hitCount = hitCount;
-    }
-
-    public void setGlobalCount(int globalCount) {
-        this.globalCount = globalCount;
+    public Present getCurrent() {
+        return current;
     }
 
     //CONSTRUCTOR:
@@ -80,20 +77,20 @@ public class GraphicsView extends View {
 
         if (pointMeasure == 0) {
             rad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
-            canvas.drawBitmap(Bitmap.createScaledBitmap(present[findPresent()], (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
-            canvas.drawBitmap(Bitmap.createScaledBitmap(top, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.present[findPresent()], (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.top, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
             degrees = 0;
         } else {
             if ((rad < (canvas.getWidth() / 40 * 17)) && (rad < (canvas.getHeight() / 40 * 17))) {
                 rad += pointMeasure;
                 degrees += 0.75;
             }
-            canvas.drawBitmap(Bitmap.createScaledBitmap(present[findPresent()], (int) rad * 2, (int) rad * 2, false), canvas.getWidth() / 2 - rad, canvas.getHeight() / 2 - rad*3/2, paint);
-            Bitmap bOutput = Bitmap.createBitmap(top, 0, 0, top.getWidth(), top.getHeight(), matrix, true);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.present[findPresent()], (int) rad * 2, (int) rad * 2, false), canvas.getWidth() / 2 - rad, canvas.getHeight() / 2 - rad*3/2, paint);
+            Bitmap bOutput = Bitmap.createBitmap(current.top, 0, 0, current.top.getWidth(), current.top.getHeight(), matrix, true);
             canvas.drawBitmap(Bitmap.createScaledBitmap(bOutput, (int) rad * 2, (int) rad * 2, false), canvas.getWidth() / 2 - rad, canvas.getHeight() / 2 - rad*3/2, paint);
         }
 
-        canvas.drawText(String.valueOf(hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, textPaint);
+        canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, textPaint);
 
         invalidate();
     }
@@ -107,8 +104,8 @@ public class GraphicsView extends View {
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 pointMeasure = 4;
                 System.out.println("down");
-                hitCount -= ((hitCount > 0) ? (1) : (0));
-                if (hitCount == 0) {
+                current.hitCount -= ((current.hitCount > 0) ? (1) : (0));
+                if (current.hitCount == 0) {
                     listener.onPresentGot();
                 }
             }
@@ -119,8 +116,9 @@ public class GraphicsView extends View {
     }
 
     public int findPresent() {
-        int currDen = (int) Math.ceil((double) globalCount / 6);
-        return (int) (5 - Math.floor((double) hitCount / currDen));
+        int currDen = (int) Math.ceil((double) current.globalHitCount / 6);
+        System.out.println(current.globalHitCount);
+        return (int) (5 - Math.floor((double) current.hitCount / currDen));
     }
 
 
