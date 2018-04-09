@@ -21,8 +21,8 @@ public class PrefsDecoder {
         SharedPreferences prefs;
         prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
 
-        Present current = new Present(prefs.getString(CURRENT_PRESENT, PresentNames.NONE), context);
-        current.setHitCount(prefs.getInt(CURRENT_HITS, PresentNames.NONE_HITS));
+        Present current = new Present(prefs.getString(CURRENT_PRESENT, AssetConstants.NONE), context);
+        current.setHitCount(prefs.getInt(CURRENT_HITS, AssetConstants.NONE_HITS));
 
         return current;
     }
