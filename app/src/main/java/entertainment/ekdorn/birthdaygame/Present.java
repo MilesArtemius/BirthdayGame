@@ -23,7 +23,7 @@ public class Present {
 
         for (int i = 1; i < 6; i++) {
             present[i-1] = AssetStore.getBitmap(String.format(AssetConstants.COVER, i), context);
-        }//
+        }
 
         switch (this.name) {
             case AssetConstants.NONE: //FIXME: очень надо, серьёзно, прям вообще, дно какое-то получилось(
