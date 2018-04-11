@@ -18,6 +18,7 @@ import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 public class BirthdayMain extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class BirthdayMain extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AssetStore.loadAll(this);
 
         Present last = PrefsDecoder.loadGame(this);
         boolean newGame = (last.name.equals(AssetConstants.NONE));
@@ -35,7 +37,6 @@ public class BirthdayMain extends AppCompatActivity {
         main = new GraphicsView(this);
         main.setPresent(newGame ? new Present(AssetConstants.NONE, this) : last);
         main.setListener(() -> {
-            PrefsDecoder.obtainPresent(this);
             String newPresent;
             String newTitle;
             String newButton;
@@ -135,6 +136,7 @@ public class BirthdayMain extends AppCompatActivity {
         ret.getButton(RetainDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PrefsDecoder.obtainPresent(BirthdayMain.this);
                 BackgroundMail.newBuilder(BirthdayMain.this)
                         .withUsername(PrivateConstants.appEMailLogin)
                         .withPassword(PrivateConstants.appEMailPassword)
@@ -161,26 +163,35 @@ public class BirthdayMain extends AppCompatActivity {
 
 
     public static void saveImageToExternal(String imgName, Bitmap bm, Context context) throws IOException { //Create Path to save Image
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/" + folderSign); //Creates app specific folder
-        System.out.println(path.getAbsolutePath());
-        path.mkdirs();
-        File imageFile = new File(path, imgName + ".png"); // Imagename.png
-        FileOutputStream out = new FileOutputStream(imageFile);
-        try{
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out); // Compress Image
-            out.flush();
-            out.close();
+        long millis = System.currentTimeMillis();
+        Thread saver = new Thread() {
+            @Override
+            public void run() {
+                try{
+                    File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/" + folderSign); //Creates app specific folder
+                    System.out.println(path.getAbsolutePath());
+                    path.mkdirs();
+                    File imageFile = new File(path, imgName + ".png"); // Imagename.png
+                    FileOutputStream out = new FileOutputStream(imageFile);
 
-            // Tell the media scanner about the new file so that it is
-            // immediately available to the user.
-            MediaScannerConnection.scanFile(context, new String[] { imageFile.getAbsolutePath() }, null, new MediaScannerConnection.OnScanCompletedListener() {
-                public void onScanCompleted(String path, Uri uri) {
-                    Log.i("ExternalStorage", "Scanned " + path + ":");
-                    Log.i("ExternalStorage", "-> uri=" + uri);
+                    bm.compress(Bitmap.CompressFormat.PNG, 100, out); // Compress Image
+                    out.flush();
+                    out.close();
+
+                    // Tell the media scanner about the new file so that it is
+                    // immediately available to the user.
+                    MediaScannerConnection.scanFile(context, new String[] { imageFile.getAbsolutePath() }, null, new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                            Log.i("ExternalStorage", "-> uri=" + uri);
+                        }
+                    });
+                } catch(Exception e) {
+                    Log.e("ERROR", "image can not be saved: ", e);;
                 }
-            });
-        } catch(Exception e) {
-            throw new IOException();
-        }
+            }
+        };
+        saver.start();
+        Log.e("TAG", "saveImageToExternal: " + (System.currentTimeMillis() - millis));
     }
 }

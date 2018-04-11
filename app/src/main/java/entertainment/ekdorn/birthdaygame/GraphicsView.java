@@ -1,5 +1,6 @@
 package entertainment.ekdorn.birthdaygame;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -47,7 +49,7 @@ public class GraphicsView extends View {
     private int animation = 0;
 
     private String presentNumber;
-    private float nod = 50, side = 65;
+    private int width, height;
 
     //SETTERS:
 
@@ -121,6 +123,7 @@ public class GraphicsView extends View {
 
     //FUNCTIONAL METHODS:
 
+    //@SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -134,6 +137,13 @@ public class GraphicsView extends View {
             int pred = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 3) : (canvas.getHeight() / 5 * 3));
             if (rad == 0) rad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
             rad += (rad >= pred) ? (0) : (1);
+            if (!current.name.equals(AssetConstants.SMTH_ELSE)) {
+                width = current.content.getWidth();
+                height = current.content.getHeight();
+            } else {
+                width = 500;
+                height = 650;
+            }
 
             if (colorGoes) {
                 animation += 5;
@@ -158,9 +168,9 @@ public class GraphicsView extends View {
                 animationCounter += 1;
                 animationGoes = (animationCounter >= 20);
             }
-            canvas.drawBitmap(Bitmap.createBitmap((int) (rad*2*500/1000 + rad/animationCounter*2), (int) (rad*2*650/1000 + rad/animationCounter*2), Bitmap.Config.RGB_565), canvas.getWidth()/2 - rad*500/1000 - rad/animationCounter, canvas.getHeight()/2 - rad*650/1000 - rad/animationCounter, animationPaint);
+            canvas.drawBitmap(Bitmap.createBitmap((int) (rad*2*width/1000 + rad/animationCounter*2), (int) (rad*2*height/1000 + rad/animationCounter*2), Bitmap.Config.RGB_565), canvas.getWidth()/2 - rad*width/1000 - rad/animationCounter, canvas.getHeight()/2 - rad*height/1000 - rad/animationCounter, animationPaint);
 
-            canvas.drawBitmap(Bitmap.createScaledBitmap(AssetStore.getBitmap(AssetConstants.BOOK_PREVIEW, this.getContext()), (int) rad*2*500/1000, (int) rad*2*650/1000, false), canvas.getWidth()/2 - rad*500/1000, canvas.getHeight()/2 - rad*650/1000, paint);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.resized, (int) rad*2*width/1000, (int) rad*2*height/1000, false), canvas.getWidth()/2 - rad*width/1000, canvas.getHeight()/2 - rad*height/1000, paint);
         } else if (pointMeasure == 0) {
             rad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
             canvas.drawBitmap(Bitmap.createScaledBitmap(current.body, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
@@ -195,6 +205,7 @@ public class GraphicsView extends View {
     public boolean onTouchEvent (MotionEvent event) {
         if (Math.sqrt((getWidth()/2 - event.getX()) * (getWidth()/2 - event.getX()) + (getHeight()/2 - rad/2 - event.getY()) * (getHeight()/2 - rad/2 - event.getY())) < rad) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                //Log.e("TAG", "\nWidth: " + current.content.getWidth() + "\nHeight: " + current.content.getHeight() + "\n" );
                 pointMeasure = 0;
                 //System.out.println("up");
             } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -204,8 +215,7 @@ public class GraphicsView extends View {
                 if ((current.hitCount == 0) && (!won)) {
                     won = true;
                     preset = false;
-                    if (current.name.equals(AssetConstants.SPECIAL)){
-                        //.insertImage(getContext().getContentResolver(), current.content,  "cool_photo.png", "nice beautiful nothing"); //TODO: replace with smth_else;
+                    if (current.name.equals(AssetConstants.SMTH_ELSE)){
                         try {
                             BirthdayMain.saveImageToExternal("cool_photo", current.content, getContext());
                         } catch (IOException e) {
