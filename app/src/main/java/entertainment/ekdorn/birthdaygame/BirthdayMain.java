@@ -1,5 +1,7 @@
 package entertainment.ekdorn.birthdaygame;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +20,7 @@ import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
+import java.io.InputStream;
 
 public class BirthdayMain extends AppCompatActivity {
 
@@ -30,6 +32,8 @@ public class BirthdayMain extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AssetStore.loadAll(this);
+
+        PrefsDecoder.setAlarm(this, true);
 
         Present last = PrefsDecoder.loadGame(this);
         boolean newGame = (last.name.equals(AssetConstants.NONE));
@@ -50,7 +54,7 @@ public class BirthdayMain extends AppCompatActivity {
                     break;
                 case 2:
                     newPresent = AssetConstants.CARDBOARD;
-                    newTitle = "Если честно, это всё. Надеюсь, тбе не надоело? Если хочешь, можешь открыть последний, третий, но предупреждаю сразу: он не так хорош, как эти два...\nБудешь смотреть?";
+                    newTitle = "Если честно, это всё. Надеюсь, тебе не надоело? Если хочешь, можешь открыть последний, третий, но предупреждаю сразу: он не так хорош, как эти два...\nБудешь смотреть?";
                     newButton = "Давай.";
                     endOfLine = false;
                     break;
@@ -162,7 +166,7 @@ public class BirthdayMain extends AppCompatActivity {
 
 
 
-    public static void saveImageToExternal(String imgName, Bitmap bm, Context context) throws IOException { //Create Path to save Image
+    public static void saveImageToExternal(String imgName, String bitmap, Context context) throws IOException { //Create Path to save Image
         long millis = System.currentTimeMillis();
         Thread saver = new Thread() {
             @Override
@@ -173,8 +177,14 @@ public class BirthdayMain extends AppCompatActivity {
                     path.mkdirs();
                     File imageFile = new File(path, imgName + ".png"); // Imagename.png
                     FileOutputStream out = new FileOutputStream(imageFile);
+                    InputStream ims = context.getAssets().open(bitmap);
 
-                    bm.compress(Bitmap.CompressFormat.PNG, 100, out); // Compress Image
+                    byte[] buffer = new byte[1024]; // Adjust if you want
+                    int bytesRead;
+                    while ((bytesRead = ims.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    //bm.compress(Bitmap.CompressFormat.PNG, 100, out); // Compress Image
                     out.flush();
                     out.close();
 

@@ -1,6 +1,5 @@
 package entertainment.ekdorn.birthdaygame;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,7 +11,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,12 +22,6 @@ import java.io.IOException;
 
 public class GraphicsView extends View {
 
-    //private Bitmap [] present = new Bitmap[7];
-    //private Bitmap top;
-
-    //private int globalCount;
-    //private int hitCount;
-
     private Present current;
 
     private int pointMeasure;
@@ -37,7 +29,7 @@ public class GraphicsView extends View {
     private boolean preset;
     private boolean won;
 
-    private float rad, finrad;
+    private float rad, finrad, normrad;
     private Paint paint, textPaint, liningPaint, animationPaint, backgroungPaint;
     private float degrees; // top rotation degree
 
@@ -50,6 +42,9 @@ public class GraphicsView extends View {
 
     private String presentNumber;
     private int width, height;
+
+    private Bitmap soundOnButton, soundOffButton;
+    private boolean soundOn;
 
     //SETTERS:
 
@@ -119,6 +114,11 @@ public class GraphicsView extends View {
         colorGoes = true;
 
         preset = false;
+
+        soundOn = PrefsDecoder.isSoundOn(context);
+        soundOnButton = AssetStore.getBitmap(AssetConstants.MUSIC_ON, context);
+        soundOffButton = AssetStore.getBitmap(AssetConstants.MUSIC_OFF, context);
+        MusicPlayer.INSTANCE.enable(soundOn, context);
     }
 
     //FUNCTIONAL METHODS:
@@ -130,12 +130,13 @@ public class GraphicsView extends View {
 
         if (!preset) preset(canvas);
         matrix.setRotate(degrees);
+        normrad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
 
         canvas.drawBitmap(Bitmap.createScaledBitmap(AssetStore.getBitmap(AssetConstants.BACKGROUND, this.getContext()), canvas.getWidth(), canvas.getHeight(), false), 0, 0, backgroungPaint);
 
         if (current.hitCount == 0) {
             int pred = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 3) : (canvas.getHeight() / 5 * 3));
-            if (rad == 0) rad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
+            if (rad == 0) rad = normrad;
             rad += (rad >= pred) ? (0) : (1);
             if (!current.name.equals(AssetConstants.SMTH_ELSE)) {
                 width = current.content.getWidth();
@@ -170,9 +171,9 @@ public class GraphicsView extends View {
             }
             canvas.drawBitmap(Bitmap.createBitmap((int) (rad*2*width/1000 + rad/animationCounter*2), (int) (rad*2*height/1000 + rad/animationCounter*2), Bitmap.Config.RGB_565), canvas.getWidth()/2 - rad*width/1000 - rad/animationCounter, canvas.getHeight()/2 - rad*height/1000 - rad/animationCounter, animationPaint);
 
-            canvas.drawBitmap(Bitmap.createScaledBitmap(current.resized, (int) rad*2*width/1000, (int) rad*2*height/1000, false), canvas.getWidth()/2 - rad*width/1000, canvas.getHeight()/2 - rad*height/1000, paint);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.content, (int) rad*2*width/1000, (int) rad*2*height/1000, false), canvas.getWidth()/2 - rad*width/1000, canvas.getHeight()/2 - rad*height/1000, paint);
         } else if (pointMeasure == 0) {
-            rad = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 2) : (canvas.getHeight() / 5 * 2));
+            rad = normrad;
             canvas.drawBitmap(Bitmap.createScaledBitmap(current.body, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
             if (findPresent() > 0) canvas.drawBitmap(Bitmap.createScaledBitmap(current.present[findPresent() - 1], (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
             canvas.drawBitmap(Bitmap.createScaledBitmap(current.top, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
@@ -187,6 +188,10 @@ public class GraphicsView extends View {
             Bitmap bOutput = Bitmap.createBitmap(current.top, 0, 0, current.top.getWidth(), current.top.getHeight(), matrix, false);
             canvas.drawBitmap(Bitmap.createScaledBitmap(bOutput, (int) rad * 2, (int) rad * 2, false), canvas.getWidth() / 2 - rad, canvas.getHeight() / 2 - rad*3/2, paint);
         }
+
+
+
+        canvas.drawBitmap(Bitmap.createScaledBitmap(soundOn ? soundOnButton : soundOffButton,  (int) normrad/3, (int) normrad/3, false), 0, canvas.getHeight() - normrad/3, paint);
 
         if (!won) {
             canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, textPaint);
@@ -203,7 +208,7 @@ public class GraphicsView extends View {
 
     @Override
     public boolean onTouchEvent (MotionEvent event) {
-        if (Math.sqrt((getWidth()/2 - event.getX()) * (getWidth()/2 - event.getX()) + (getHeight()/2 - rad/2 - event.getY()) * (getHeight()/2 - rad/2 - event.getY())) < rad) {
+        if ((event.getX() > (getWidth()/2 - rad)) && (event.getX() < (getWidth()/2 + rad)) && (event.getY() > (getHeight()/2 - rad)) && (event.getY() < (getHeight()/2 + rad))) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 //Log.e("TAG", "\nWidth: " + current.content.getWidth() + "\nHeight: " + current.content.getHeight() + "\n" );
                 pointMeasure = 0;
@@ -217,7 +222,7 @@ public class GraphicsView extends View {
                     preset = false;
                     if (current.name.equals(AssetConstants.SMTH_ELSE)){
                         try {
-                            BirthdayMain.saveImageToExternal("cool_photo", current.content, getContext());
+                            BirthdayMain.saveImageToExternal("cool_photo", current.filename, getContext());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -226,6 +231,12 @@ public class GraphicsView extends View {
                 }
             }
             return true;
+        } else if ((event.getX() < normrad/3) && (event.getY() > (getHeight() - normrad/3))) {
+            soundOn = !soundOn;
+            PrefsDecoder.turnSound(getContext(), soundOn);
+            System.out.println("The music was turned " + (soundOn ? "on." : "off."));
+            MusicPlayer.INSTANCE.enable(soundOn, getContext());
+            return false;
         } else {
             return false;
         }

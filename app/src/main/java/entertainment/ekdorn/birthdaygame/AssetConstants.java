@@ -4,6 +4,10 @@ public class AssetConstants {
     public static final String COVER = "cover%s.png";
     public static final String BACKGROUND = "background.png";
 
+    public static final String MUSIC_ON = "music_on.png";
+    public static final String MUSIC_OFF = "music_mute.png";
+    public static final String MUSIC = "music%s.mp3";
+
     public static final String BOOK = "book";
     public static final int BOOK_HITS = 10;
     public static final String BOOK_BODY = "book_body.png";
