@@ -102,6 +102,18 @@ public enum MusicPlayer {
 			player = null;
 		}
 	}
+
+    public void pause() {
+        if (player != null) {
+            player.pause();
+        }
+    }
+
+    public void resume() {
+        if (player != null) {
+            player.start();
+        }
+    }
 	
 	private boolean isPlaying() {
 		return player != null && player.isPlaying();

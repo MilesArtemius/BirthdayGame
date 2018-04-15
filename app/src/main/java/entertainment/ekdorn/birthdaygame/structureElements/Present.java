@@ -7,6 +7,7 @@ import java.util.Random;
 
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
+import entertainment.ekdorn.birthdaygame.assetsWorking.PrefsDecoder;
 
 public class Present {
     public Bitmap[] present = new Bitmap[AssetConstants.COVER_count];
@@ -41,7 +42,7 @@ public class Present {
                 break;
 
             case AssetConstants.BOOK:
-                this.hitCount = this.globalHitCount = AssetConstants.BOOK_HITS;
+                this.hitCount = this.globalHitCount = PrefsDecoder.getHitCount(context, AssetConstants.BOOK);
 
                 this.top = AssetStore.getBitmap(AssetConstants.BOOK_TOP, context);
                 this.body = AssetStore.getBitmap(AssetConstants.BOOK_BODY, context);
@@ -52,7 +53,7 @@ public class Present {
                 break;
 
             case AssetConstants.SPECIAL:
-                this.hitCount = this.globalHitCount = AssetConstants.SPECIAL_HITS;
+                this.hitCount = this.globalHitCount = PrefsDecoder.getHitCount(context, AssetConstants.SPECIAL);
 
                 this.top = AssetStore.getBitmap(AssetConstants.SPECIAL_TOP, context);
                 this.body = AssetStore.getBitmap(AssetConstants.SPECIAL_BODY, context);
@@ -63,7 +64,7 @@ public class Present {
                 break;
 
             case AssetConstants.CARDBOARD:
-                this.hitCount = this.globalHitCount = AssetConstants.CARDBOARD_HITS;
+                this.hitCount = this.globalHitCount = PrefsDecoder.getHitCount(context, AssetConstants.CARDBOARD);
 
                 this.top = AssetStore.getBitmap(AssetConstants.CARDBOARD_TOP, context);
                 this.body = AssetStore.getBitmap(AssetConstants.CARDBOARD_BODY, context);
@@ -74,7 +75,7 @@ public class Present {
                 break;
 
             case AssetConstants.SMTH_ELSE:
-                this.hitCount = this.globalHitCount = AssetConstants.SMTH_ELSE_HITS;
+                this.hitCount = this.globalHitCount = PrefsDecoder.getHitCount(context, AssetConstants.SMTH_ELSE);
 
                 this.top = AssetStore.getBitmap(AssetConstants.SMTH_ELSE_TOP, context);
                 this.body = AssetStore.getBitmap(AssetConstants.SMTH_ELSE_BODY, context);

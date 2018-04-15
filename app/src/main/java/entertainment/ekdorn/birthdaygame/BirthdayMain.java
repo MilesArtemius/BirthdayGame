@@ -26,6 +26,7 @@ import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
 import entertainment.ekdorn.birthdaygame.assetsWorking.PrefsDecoder;
 import entertainment.ekdorn.birthdaygame.assetsWorking.PrivateConstants;
+import entertainment.ekdorn.birthdaygame.structureElements.MusicPlayer;
 import entertainment.ekdorn.birthdaygame.structureElements.Present;
 import entertainment.ekdorn.birthdaygame.structureElements.RetainDialog;
 
@@ -42,7 +43,7 @@ public class BirthdayMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AssetStore.loadAll(this);
 
-        PrefsDecoder.setAlarm(this, true);
+        PrefsDecoder.setAlarm(this, false);
 
         Present last = PrefsDecoder.loadGame(this);
         newGame = (last.name.equals(AssetConstants.NONE));
@@ -88,12 +89,14 @@ public class BirthdayMain extends AppCompatActivity {
     @Override
     protected void onPause() {
         PrefsDecoder.saveGame(this, main.getCurrent());
+        MusicPlayer.INSTANCE.pause();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         Log.e("TAG", "onResume: " + newGame );
+        MusicPlayer.INSTANCE.resume();
 
         super.onResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -146,6 +149,9 @@ public class BirthdayMain extends AppCompatActivity {
         ret.setCanceledOnTouchOutside(false);
         ret.setCancelable(false);
         ret.setButton(DialogInterface.BUTTON_POSITIVE, onButton, (DialogInterface.OnClickListener) null);
+        if (nextPresent.equals(AssetConstants.BOOK)) {
+            ret.setButton(DialogInterface.BUTTON_NEGATIVE, "Можно побыстрее? Я занята.", (DialogInterface.OnClickListener) null);
+        }
         if (isEndOfLine) {
             ret.setButton(DialogInterface.BUTTON_NEUTRAL, "У меня есть что сказать лично", (DialogInterface.OnClickListener) null);
         }
@@ -160,6 +166,7 @@ public class BirthdayMain extends AppCompatActivity {
         ret.getButton(RetainDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (nextPresent.equals(AssetConstants.BOOK)) PrefsDecoder.setGameMode(BirthdayMain.this, true);
                 PrefsDecoder.obtainPresent(BirthdayMain.this);
                 BackgroundMail.newBuilder(BirthdayMain.this)
                         .withUsername(PrivateConstants.appEMailLogin)
@@ -168,6 +175,25 @@ public class BirthdayMain extends AppCompatActivity {
                         .withType(BackgroundMail.TYPE_PLAIN)
                         .withSubject(emailTitle)
                         .withBody(emailBody)
+                        .withProcessVisibility(false)
+                        .withSendingMessageSuccess(null)
+                        .withSendingMessageSuccess(null)
+                        .send();
+                ret.dismiss();
+            }
+        });
+        ret.getButton(RetainDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (nextPresent.equals(AssetConstants.BOOK)) PrefsDecoder.setGameMode(BirthdayMain.this, false);
+                PrefsDecoder.obtainPresent(BirthdayMain.this);
+                BackgroundMail.newBuilder(BirthdayMain.this)
+                        .withUsername(PrivateConstants.appEMailLogin)
+                        .withPassword(PrivateConstants.appEMailPassword)
+                        .withMailto(PrivateConstants.myEMail)
+                        .withType(BackgroundMail.TYPE_PLAIN)
+                        .withSubject(emailTitle)
+                        .withBody("she's busy; present's not valid...")
                         .withProcessVisibility(false)
                         .withSendingMessageSuccess(null)
                         .withSendingMessageSuccess(null)

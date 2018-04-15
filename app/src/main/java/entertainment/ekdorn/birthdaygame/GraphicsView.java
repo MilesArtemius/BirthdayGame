@@ -206,7 +206,7 @@ public class GraphicsView extends View {
 
         canvas.drawBitmap(Bitmap.createScaledBitmap(soundOn ? soundOnButton : soundOffButton,  (int) normrad/3, (int) normrad/3, false), 0, canvas.getHeight() - normrad/3, paint);
 
-        if (!current.name.equals(AssetConstants.NONE)) {
+        if ((!current.name.equals(AssetConstants.NONE)) && (!won)) {
             canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, textPaint);
             canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, liningPaint);
         } else if (won) {
@@ -235,7 +235,7 @@ public class GraphicsView extends View {
                     preset = false;
                     if (current.name.equals(AssetConstants.SMTH_ELSE)){
                         try {
-                            BirthdayMain.saveImageToExternal("cool_photo", current.filename, getContext());
+                            BirthdayMain.saveImageToExternal("happy_birthday", current.filename, getContext());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

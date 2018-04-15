@@ -24,6 +24,8 @@ public class PrefsDecoder {
 
     private static final String ALARM_SET = "alarm";
 
+    private static final String GAME_MODE = "game_mode";
+
     public static void saveGame(Context context, Present current) {
         SharedPreferences prefs;
         prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -76,6 +78,22 @@ public class PrefsDecoder {
 
 
 
+    public static void setGameMode(Context context, boolean isLong) {
+        SharedPreferences prefs;
+        prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+        prefs.edit().putBoolean(GAME_MODE, isLong).apply();
+    }
+
+    public static int getHitCount(Context context, String presentName) {
+        SharedPreferences prefs;
+        prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+        return AssetConstants.getConstForPresent(presentName, prefs.getBoolean(GAME_MODE, false));
+    }
+
+
+
     public static void setAlarm(Context context, boolean force) {
         SharedPreferences prefs;
         prefs = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
@@ -96,11 +114,11 @@ public class PrefsDecoder {
 
             //CUSTOM INTENTS WITH MESSAGES:
 
-            setSingleAlarm(10000, 9, 35, "Привет, прекрасная Маша!!\nС днём рождения! \uD83C\uDF89\uD83C\uDF89\uD83C\uDF8A\nЖелаю тебе отличного дня!", context);
-            setSingleAlarm(15000, 14, 43, "Пусть у тебя в жизни всё сбудется! Всё, что ты захочешь, конечно. И то, что будет тебе полезно...\nВ общем, всего самого лучшего тебе!", context);
-            setSingleAlarm(15000, 21, 6, "Будь жива и здорова.\nИ улыбнись)\nНу а мне пора.", context);
-            setSingleAlarm(20000, 22, 27, "Я рад и горжусь тем, что мы дружим\uD83D\uDE09\nНе удаляй программу - я поздравлю тебя через год...", context);
-            setSingleAlarm(25000, 22, 34, "Спокойной ночи!)", context);
+            setSingleAlarm(1, 9, 35, "Привет, прекрасная Маша!!\nС днём рождения! \uD83C\uDF89\uD83C\uDF89\uD83C\uDF8A\nЖелаю тебе отличного дня!", context);
+            setSingleAlarm(2, 14, 43, "Пусть у тебя в жизни всё сбудется! Всё, что ты захочешь, конечно. И то, что будет тебе полезно...\nВ общем, всего самого лучшего тебе!", context);
+            setSingleAlarm(3, 21, 6, "Будь жива и здорова.\nИ улыбнись)\nНу а мне пора.", context);
+            setSingleAlarm(4, 22, 27, "Я рад и горжусь тем, что мы дружим\uD83D\uDE09\nНе удаляй программу - я поздравлю тебя через год...", context);
+            setSingleAlarm(5, 22, 34, "Спокойной ночи!)", context);
 
             prefs.edit().putBoolean(ALARM_SET, true).apply();
         }
@@ -113,14 +131,14 @@ public class PrefsDecoder {
         Calendar calendar = Calendar.getInstance();
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.setTimeInMillis(System.currentTimeMillis() + DEBUG); //TODO: replace;
-        //calendar.set(Calendar.MONTH, Calendar.APRIL);
-        //calendar.set(Calendar.DAY_OF_MONTH, 29);
-        //calendar.set(Calendar.HOUR_OF_DAY, hours);
-        //calendar.set(Calendar.MINUTE, minutes);
-        //calendar.set(Calendar.SECOND, 1);
+        //calendar.setTimeInMillis(System.currentTimeMillis() + DEBUG); //TODO: replace;
+        calendar.set(Calendar.MONTH, Calendar.APRIL);
+        calendar.set(Calendar.DAY_OF_MONTH, 29);
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
+        calendar.set(Calendar.SECOND, 1);
         alarmIntent.putExtra(AlarmReceiver.MESSAGE, message);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, minutes, alarmIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, DEBUG, alarmIntent, 0);
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 0, pendingIntent);
     }
 }
