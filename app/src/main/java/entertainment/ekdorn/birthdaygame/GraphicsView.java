@@ -16,6 +16,12 @@ import android.view.View;
 
 import java.io.IOException;
 
+import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
+import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
+import entertainment.ekdorn.birthdaygame.assetsWorking.PrefsDecoder;
+import entertainment.ekdorn.birthdaygame.structureElements.MusicPlayer;
+import entertainment.ekdorn.birthdaygame.structureElements.Present;
+
 /**
  * Created by User on 01.04.2018.
  */

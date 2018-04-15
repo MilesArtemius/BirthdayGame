@@ -1,11 +1,8 @@
 package entertainment.ekdorn.birthdaygame;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +19,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
+import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
+import entertainment.ekdorn.birthdaygame.assetsWorking.PrefsDecoder;
+import entertainment.ekdorn.birthdaygame.assetsWorking.PrivateConstants;
+import entertainment.ekdorn.birthdaygame.structureElements.Present;
+import entertainment.ekdorn.birthdaygame.structureElements.RetainDialog;
+
 public class BirthdayMain extends AppCompatActivity {
 
     public static final String appSign = "BIRTHDAY_GAME";
@@ -33,7 +37,7 @@ public class BirthdayMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AssetStore.loadAll(this);
 
-        PrefsDecoder.setAlarm(this, true);
+        PrefsDecoder.setAlarm(this, false);
 
         Present last = PrefsDecoder.loadGame(this);
         boolean newGame = (last.name.equals(AssetConstants.NONE));

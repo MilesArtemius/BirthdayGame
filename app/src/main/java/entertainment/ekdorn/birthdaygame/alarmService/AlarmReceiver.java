@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import entertainment.ekdorn.birthdaygame.PrefsDecoder;
+import entertainment.ekdorn.birthdaygame.assetsWorking.PrefsDecoder;
 
 public class AlarmReceiver extends BroadcastReceiver {
     public static final String MESSAGE = "intent_message";
