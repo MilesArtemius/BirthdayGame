@@ -115,7 +115,7 @@ public class BirthdayMain extends AppCompatActivity {
             Runnable starter = new Runnable() {
                 @Override
                 public void run() {
-                    applyDialog("Привет Маша!", "С днём рождения!\nЯ приготовил тебе несколько подарков (всего три) и завернул их в эту программу. Ты можешь открыть когда и сколько захочешь. Удачи!\n\uD83D\uDC21, второй лучший...",
+                    applyDialog("Привет Маша!", "С днём рождения!\nЯ приготовил тебе несколько подарков (всего три) и завернул их в эту программу. Ты можешь открыть когда и сколько захочешь. Удачи!\nIMHO, второй лучший...",
                             "Давай сюда всё!", appSign, "she started", AssetConstants.BOOK, false);
                     newGame = false;//
                 }
@@ -153,7 +153,7 @@ public class BirthdayMain extends AppCompatActivity {
             ret.setButton(DialogInterface.BUTTON_NEGATIVE, "Можно побыстрее? Я занята.", (DialogInterface.OnClickListener) null);
         }
         if (isEndOfLine) {
-            ret.setButton(DialogInterface.BUTTON_NEUTRAL, "У меня есть что сказать лично", (DialogInterface.OnClickListener) null);
+            ret.setButton(DialogInterface.BUTTON_NEUTRAL, "\uD83D\uDC20\uD83D\uDC20 лично", (DialogInterface.OnClickListener) null);
         }
         ret.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
