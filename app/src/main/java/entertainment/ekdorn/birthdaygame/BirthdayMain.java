@@ -65,7 +65,7 @@ public class BirthdayMain extends AppCompatActivity {
                 case 2:
                     newPresent = AssetConstants.CARDBOARD;
                     newTitle = "Если честно, это всё. Надеюсь, тебе не надоело? Если хочешь, можешь открыть последний, третий, но предупреждаю сразу: он не так хорош, как эти два...\nБудешь смотреть?";
-                    newButton = "Давай.";
+                    newButton = "Давай, \uD83D\uDC2C.";
                     endOfLine = false;
                     break;
                 case 3:
