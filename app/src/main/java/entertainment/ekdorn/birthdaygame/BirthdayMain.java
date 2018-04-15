@@ -7,6 +7,9 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,15 +35,17 @@ public class BirthdayMain extends AppCompatActivity {
     public static final String folderSign = "Happy birthday 2018";
     private GraphicsView main;
 
+    private boolean newGame;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AssetStore.loadAll(this);
 
-        PrefsDecoder.setAlarm(this, false);
+        PrefsDecoder.setAlarm(this, true);
 
         Present last = PrefsDecoder.loadGame(this);
-        boolean newGame = (last.name.equals(AssetConstants.NONE));
+        newGame = (last.name.equals(AssetConstants.NONE));
 
         main = new GraphicsView(this);
         main.setPresent(newGame ? new Present(AssetConstants.NONE, this) : last);
@@ -78,11 +83,6 @@ public class BirthdayMain extends AppCompatActivity {
             applyDialog("Поздравляю!", newTitle, newButton, appSign, newPresent + " got. Get ready.", newPresent, endOfLine);
         });
         setContentView(main);
-
-        if (newGame) {
-            applyDialog("Привет Маша!", "С днём рождения!\nЯ приготовил тебе несколько подарков (всего три) и завернул их в эту программу. Ты можешь открыть когда и сколько захочешь. Удачи!\nИМХО, второй лучший...",
-                    "Давай сюда всё!", appSign, "she started", AssetConstants.BOOK, false);
-        }
     }
 
     @Override
@@ -93,6 +93,8 @@ public class BirthdayMain extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.e("TAG", "onResume: " + newGame );
+
         super.onResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             main.setSystemUiVisibility(
@@ -102,6 +104,20 @@ public class BirthdayMain extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+
+        PowerManager powerManager = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        if ((newGame) && (Build.VERSION.SDK_INT < 20? powerManager.isScreenOn() : powerManager.isInteractive())) {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            Runnable starter = new Runnable() {
+                @Override
+                public void run() {
+                    applyDialog("Привет Маша!", "С днём рождения!\nЯ приготовил тебе несколько подарков (всего три) и завернул их в эту программу. Ты можешь открыть когда и сколько захочешь. Удачи!\n\uD83D\uDC21, второй лучший...",
+                            "Давай сюда всё!", appSign, "she started", AssetConstants.BOOK, false);
+                    newGame = false;
+                }
+            };
+            mainHandler.postDelayed(starter, 4000);
         }
     }
 

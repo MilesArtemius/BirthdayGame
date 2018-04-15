@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
+import entertainment.ekdorn.birthdaygame.GraphicsView;
+
 public class AssetStore {
     private static AssetStore ita;
 
@@ -20,7 +22,7 @@ public class AssetStore {
         if (ita.all.containsKey(key)) {
             return ita.all.get(key);
         } else if ((key.contains("content")) || (key.contains("preview"))) {
-            return Bitmap.createScaledBitmap(getAsset(context, key), 500, 650, true);
+            return Bitmap.createScaledBitmap(getAsset(context, key), GraphicsView.bestFitW, GraphicsView.bestFitH, true);
         } else {
             return getAsset(context, key);
         }
@@ -71,21 +73,21 @@ public class AssetStore {
                 ita.all.put(AssetConstants.BOOK_TOP, getAsset(context, AssetConstants.BOOK_TOP));
                 //ita.all.put(AssetConstants.BOOK_SIDE, getAsset(context, AssetConstants.BOOK_SIDE));
                 //ita.all.put(AssetConstants.BOOK_PREVIEW, getAsset(context, AssetConstants.BOOK_PREVIEW));
-                ita.all.put(AssetConstants.BOOK_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.BOOK_PREVIEW), 500, 650, true));
+                ita.all.put(AssetConstants.BOOK_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.BOOK_PREVIEW), GraphicsView.bestFitW, GraphicsView.bestFitH, true));
 
                 //ita.all.put(AssetConstants.SPECIAL, getAsset(context, AssetConstants.SPECIAL));
                 ita.all.put(AssetConstants.SPECIAL_BODY, getAsset(context, AssetConstants.SPECIAL_BODY));
                 ita.all.put(AssetConstants.SPECIAL_TOP, getAsset(context, AssetConstants.SPECIAL_TOP));
                 //ita.all.put(AssetConstants.SPECIAL_SIDE, getAsset(context, AssetConstants.SPECIAL_SIDE));
                 //ita.all.put(AssetConstants.SPECIAL_PREVIEW, getAsset(context, AssetConstants.SPECIAL_PREVIEW));
-                ita.all.put(AssetConstants.SPECIAL_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.SPECIAL_PREVIEW), 500, 650, true));
+                ita.all.put(AssetConstants.SPECIAL_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.SPECIAL_PREVIEW), GraphicsView.bestFitW, GraphicsView.bestFitH, true));
 
                 //ita.all.put(AssetConstants.CARDBOARD, getAsset(context, AssetConstants.CARDBOARD));
                 ita.all.put(AssetConstants.CARDBOARD_BODY, getAsset(context, AssetConstants.CARDBOARD_BODY));
                 ita.all.put(AssetConstants.CARDBOARD_TOP, getAsset(context, AssetConstants.CARDBOARD_TOP));
                 //ita.all.put(AssetConstants.CARDBOARD_SIDE, getAsset(context, AssetConstants.CARDBOARD_SIDE));
                 //ita.all.put(AssetConstants.CARDBOARD_PREVIEW, getAsset(context, AssetConstants.CARDBOARD_PREVIEW));
-                ita.all.put(AssetConstants.CARDBOARD_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.CARDBOARD_PREVIEW), 500, 650, true));
+                ita.all.put(AssetConstants.CARDBOARD_PREVIEW, Bitmap.createScaledBitmap(getAsset(context, AssetConstants.CARDBOARD_PREVIEW), GraphicsView.bestFitW, GraphicsView.bestFitH, true));
 
                 //ita.all.put(AssetConstants.SMTH_ELSE, getAsset(context, AssetConstants.SMTH_ELSE));
                 ita.all.put(AssetConstants.SMTH_ELSE_BODY, getAsset(context, AssetConstants.SMTH_ELSE_BODY));
@@ -98,7 +100,7 @@ public class AssetStore {
                 for (int i = 1; i < 2; i++) {
                     String key = String.format(AssetConstants.SMTH_ELSE_CONTENT, i);
                     //ita.all.put(key, getAsset(context, key));
-                    ita.all.put(key, Bitmap.createScaledBitmap( getAsset(context, key), 500, 650, true));
+                    ita.all.put(key, Bitmap.createScaledBitmap( getAsset(context, key), GraphicsView.bestFitW, GraphicsView.bestFitH, true));
                 }
 
                 Log.e("TAG", "run: ALL LOADED");

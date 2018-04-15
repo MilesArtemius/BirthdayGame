@@ -123,7 +123,7 @@ public enum MusicPlayer {
 
     private String findAsset() {
         Random rnd = new Random();
-        int period = rnd.nextInt(1) + 1;
+        int period = rnd.nextInt(AssetConstants.MUSIC_count) + 1;
         return String.format(AssetConstants.MUSIC, period);
     }
 }

@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.IOException;
+import java.util.Random;
 
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
@@ -27,6 +28,8 @@ import entertainment.ekdorn.birthdaygame.structureElements.Present;
  */
 
 public class GraphicsView extends View {
+
+    public static final int bestFitW = 500, bestFitH = 650;
 
     private Present current;
 
@@ -47,7 +50,6 @@ public class GraphicsView extends View {
     private int animation = 0;
 
     private String presentNumber;
-    private int width, height;
 
     private Bitmap soundOnButton, soundOffButton;
     private boolean soundOn;
@@ -140,16 +142,21 @@ public class GraphicsView extends View {
 
         canvas.drawBitmap(Bitmap.createScaledBitmap(AssetStore.getBitmap(AssetConstants.BACKGROUND, this.getContext()), canvas.getWidth(), canvas.getHeight(), false), 0, 0, backgroungPaint);
 
-        if (current.hitCount == 0) {
+        if (current.name.equals(AssetConstants.NONE)) {
+            Random rnd = new Random();
+            rad = (normrad/5*6)*(rnd.nextFloat()/32+1);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.body, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad, paint);
+        } else if (current.hitCount == 0) {
             int pred = ((canvas.getWidth() < canvas.getHeight()) ? (canvas.getWidth() / 5 * 3) : (canvas.getHeight() / 5 * 3));
             if (rad == 0) rad = normrad;
             rad += (rad >= pred) ? (0) : (1);
+            int width, height;
             if (!current.name.equals(AssetConstants.SMTH_ELSE)) {
                 width = current.content.getWidth();
                 height = current.content.getHeight();
             } else {
-                width = 500;
-                height = 650;
+                width = bestFitW;
+                height = bestFitH;
             }
 
             if (colorGoes) {
@@ -175,9 +182,9 @@ public class GraphicsView extends View {
                 animationCounter += 1;
                 animationGoes = (animationCounter >= 20);
             }
-            canvas.drawBitmap(Bitmap.createBitmap((int) (rad*2*width/1000 + rad/animationCounter*2), (int) (rad*2*height/1000 + rad/animationCounter*2), Bitmap.Config.RGB_565), canvas.getWidth()/2 - rad*width/1000 - rad/animationCounter, canvas.getHeight()/2 - rad*height/1000 - rad/animationCounter, animationPaint);
+            canvas.drawBitmap(Bitmap.createBitmap((int) (rad*2* width /1000 + rad/animationCounter*2), (int) (rad*2* height /1000 + rad/animationCounter*2), Bitmap.Config.RGB_565), canvas.getWidth()/2 - rad* width /1000 - rad/animationCounter, canvas.getHeight()/2 - rad* height /1000 - rad/animationCounter, animationPaint);
 
-            canvas.drawBitmap(Bitmap.createScaledBitmap(current.content, (int) rad*2*width/1000, (int) rad*2*height/1000, false), canvas.getWidth()/2 - rad*width/1000, canvas.getHeight()/2 - rad*height/1000, paint);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(current.content, (int) rad*2* width /1000, (int) rad*2* height /1000, false), canvas.getWidth()/2 - rad* width /1000, canvas.getHeight()/2 - rad* height /1000, paint);
         } else if (pointMeasure == 0) {
             rad = normrad;
             canvas.drawBitmap(Bitmap.createScaledBitmap(current.body, (int) rad*2, (int) rad*2, false), canvas.getWidth()/2 - rad, canvas.getHeight()/2 - rad*3/2, paint);
@@ -199,10 +206,10 @@ public class GraphicsView extends View {
 
         canvas.drawBitmap(Bitmap.createScaledBitmap(soundOn ? soundOnButton : soundOffButton,  (int) normrad/3, (int) normrad/3, false), 0, canvas.getHeight() - normrad/3, paint);
 
-        if (!won) {
+        if (!current.name.equals(AssetConstants.NONE)) {
             canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, textPaint);
             canvas.drawText(String.valueOf(current.hitCount), canvas.getWidth()/2, canvas.getHeight()/2 + finrad*3/2, liningPaint);
-        } else {
+        } else if (won) {
             canvas.drawText("Твой " + presentNumber, canvas.getWidth()/2, canvas.getHeight()/2 - finrad*25/16, textPaint);
             canvas.drawText("Твой " + presentNumber, canvas.getWidth()/2, canvas.getHeight()/2 - finrad*25/16, liningPaint);
             canvas.drawText("подарок:", canvas.getWidth()/2, canvas.getHeight()/2 - finrad*25/16 - textPaint.ascent() + textPaint.descent(), textPaint);
@@ -214,7 +221,7 @@ public class GraphicsView extends View {
 
     @Override
     public boolean onTouchEvent (MotionEvent event) {
-        if ((event.getX() > (getWidth()/2 - rad)) && (event.getX() < (getWidth()/2 + rad)) && (event.getY() > (getHeight()/2 - rad)) && (event.getY() < (getHeight()/2 + rad))) {
+        if ((!current.name.equals(AssetConstants.NONE)) && ((event.getX() > (getWidth()/2 - rad)) && (event.getX() < (getWidth()/2 + rad)) && (event.getY() > (getHeight()/2 - rad)) && (event.getY() < (getHeight()/2 + rad)))) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 //Log.e("TAG", "\nWidth: " + current.content.getWidth() + "\nHeight: " + current.content.getHeight() + "\n" );
                 pointMeasure = 0;
@@ -249,8 +256,8 @@ public class GraphicsView extends View {
     }
 
     public int findPresent() {
-        int currDen = (int) Math.ceil((double) current.globalHitCount / 6);
-        return (int) (5 - Math.floor((double) current.hitCount / currDen));
+        int currDen = (int) Math.ceil((double) current.globalHitCount / (AssetConstants.COVER_count));
+        return (int) (AssetConstants.COVER_count - Math.floor((double) current.hitCount / currDen));
     }
 
     private void preset(Canvas canvas) {

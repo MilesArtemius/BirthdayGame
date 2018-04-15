@@ -9,7 +9,7 @@ import entertainment.ekdorn.birthdaygame.assetsWorking.AssetConstants;
 import entertainment.ekdorn.birthdaygame.assetsWorking.AssetStore;
 
 public class Present {
-    public Bitmap[] present = new Bitmap[5];
+    public Bitmap[] present = new Bitmap[AssetConstants.COVER_count];
     public Bitmap body;
     public Bitmap top;
     public Bitmap side;
@@ -24,7 +24,7 @@ public class Present {
     public Present(String name, Context context) {
         this.name = name;
 
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i <= AssetConstants.COVER_count; i++) {
             present[i-1] = AssetStore.getBitmap(String.format(AssetConstants.COVER, i), context);
         }
 
@@ -33,7 +33,7 @@ public class Present {
                 this.hitCount = this.globalHitCount = AssetConstants.NONE_HITS;
 
                 this.top = AssetStore.getBitmap(AssetConstants.BOOK_TOP, context);
-                this.body = AssetStore.getBitmap(AssetConstants.BOOK_BODY, context);
+                this.body = AssetStore.getBitmap(AssetConstants.NONE_BODY, context);
                 this.content = AssetStore.getBitmap(AssetConstants.BOOK_PREVIEW, context);
                 this.filename = AssetConstants.BOOK_PREVIEW;
                 //this.resized ;
@@ -94,7 +94,7 @@ public class Present {
 
     private String findElseContent() {
         Random rnd = new Random();
-        int period = rnd.nextInt(1) + 1;
+        int period = rnd.nextInt(AssetConstants.SMTH_ELSE_CONTENT_count) + 1;
         return String.format(AssetConstants.SMTH_ELSE_CONTENT, period);
     }
 }
