@@ -114,7 +114,7 @@ public class BirthdayMain extends AppCompatActivity {
                 public void run() {
                     applyDialog("Привет Маша!", "С днём рождения!\nЯ приготовил тебе несколько подарков (всего три) и завернул их в эту программу. Ты можешь открыть когда и сколько захочешь. Удачи!\n\uD83D\uDC21, второй лучший...",
                             "Давай сюда всё!", appSign, "she started", AssetConstants.BOOK, false);
-                    newGame = false;
+                    newGame = false;//
                 }
             };
             mainHandler.postDelayed(starter, 4000);
